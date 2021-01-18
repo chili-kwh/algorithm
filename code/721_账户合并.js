@@ -6,8 +6,8 @@ var accountsMerge = function (accounts) {
     const n = accounts.length;
     if (n <= 1) return accounts;
 
-    let accountMap = {}
     let roots = Array.from(new Array(n), (e, i) => i)
+    let accountMap = new Map()
     let results = new Array(n)
 
     function find(n) {
@@ -18,18 +18,7 @@ var accountsMerge = function (accounts) {
         roots[find(a)] = find(b)
     }
 
-    for ([idx, [name, ...emails]] of accounts.entries()) {
-        for (em of emails) {
-            if (accountMap[em] === undefined) {
-                accountMap[em] = idx
-            } else {
-                union(accountMap[em], idx)
-            }
-        }
-    }
-
     function mergeAccount(root, idx) {
-
         if (!results[root]) {
             return [...new Set(accounts[idx])].sort()
         }
@@ -40,7 +29,19 @@ var accountsMerge = function (accounts) {
         return [name, ...email]
     }
 
-    for ([idx, rt] of roots.entries()) {
+    // 哈希表记录email，出现相同email进行序号合并
+    for ([idx, [name, ...emails]] of accounts.entries()) {
+        for (email of emails) {
+            if (!accountMap.has(email)) {
+                accountMap.set(email, idx)
+            } else {
+                union(accountMap.get(email), idx)
+            }
+        }
+    }
+
+    // 遍历序号合并结果，进行账户合并
+    for (idx of roots.keys()) {
         const root = find(idx)
         results[root] = mergeAccount(root, idx)
     }
