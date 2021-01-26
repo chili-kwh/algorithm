@@ -66,6 +66,13 @@ var regionsBySlashes = function (grid) {
         set.add(find(k))
     }
     return set.size
+
+    // 另一种统计连通分量方法
+    // let count = 0
+    // for (let [k, v] of roots.entries()) {
+    //     if(k === v) count++
+    // }
+    // return count
 };
 
 const res = regionsBySlashes([" /", "/ "])
